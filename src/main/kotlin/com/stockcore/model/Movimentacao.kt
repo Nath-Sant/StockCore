@@ -11,7 +11,7 @@ data class Movimentacao(
     val id: Long = 0,
 
     @ManyToOne
-    @JoinColumn(name = "produto_id", nullable = false)
+    @JoinColumn(name = "idProduto", nullable = false)
     val produto: Produto,
 
     @Column(nullable = false)

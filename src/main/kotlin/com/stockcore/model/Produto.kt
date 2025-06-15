@@ -13,7 +13,7 @@ data class Produto(
     val nome: String,
 
     @ManyToOne
-    @JoinColumn(name = "tipo_id", nullable = false)
+    @JoinColumn(name = "idTipoProduto", nullable = false)
     val tipo: TipoProduto,
 
     @Column(nullable = false)
