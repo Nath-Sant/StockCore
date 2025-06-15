@@ -1,0 +1,12 @@
+package com.stockcore.dto
+
+import java.time.LocalDateTime
+
+data class MovimentacaoDTO(
+    val id: Long,
+    val produtoNome: String,
+    val quantidade: Int,
+    val tipoMovimentacao: String,
+    val dataHora: LocalDateTime,
+    val origem: String?
+)
