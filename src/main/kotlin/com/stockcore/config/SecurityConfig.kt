@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain
 @EnableWebSecurity
 class SecurityConfig(private val jwtFilter: JWTAuthenticationFilter) {
 
+    /*
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf().disable()
@@ -23,5 +24,14 @@ class SecurityConfig(private val jwtFilter: JWTAuthenticationFilter) {
             .addFilterBefore(jwtFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()
+    } */
+    @Bean
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+        http.csrf().disable()
+            .authorizeHttpRequests {
+                it.anyRequest().permitAll()
+            }
+        return http.build()
     }
+
 }
