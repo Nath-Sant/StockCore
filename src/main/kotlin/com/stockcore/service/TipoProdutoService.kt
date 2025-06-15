@@ -12,7 +12,7 @@ class TipoProdutoService(
 
     private fun toDTO(tipoProduto: TipoProduto): TipoProdutoDTO {
         return TipoProdutoDTO(
-            id = tipoProduto.id,
+            id = tipoProduto.idTipoProduto,
             nomeTipo = tipoProduto.nomeTipo
         )
     }
@@ -35,7 +35,7 @@ class TipoProdutoService(
         val existente = tipoProdutoRepository.findById(id)
             .orElseThrow { RuntimeException("TipoProduto não encontrado") }
 
-        val tipoAtualizado = tipoProduto.copy(id = existente.id)
+        val tipoAtualizado = tipoProduto.copy(idTipoProduto = existente.idTipoProduto)
         return toDTO(tipoProdutoRepository.save(tipoAtualizado))
     }
 

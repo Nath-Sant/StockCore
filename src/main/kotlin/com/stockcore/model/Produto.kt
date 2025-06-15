@@ -7,7 +7,8 @@ import jakarta.persistence.*
 data class Produto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @Column(name = "idProduto")
+    val idProduto: Long = 0,
 
     @Column(nullable = false)
     val nome: String,

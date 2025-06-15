@@ -12,7 +12,7 @@ class ProdutoService(
 
     private fun toDTO(produto: Produto): ProdutoDTO {
         return ProdutoDTO(
-            id = produto.id,
+            id = produto.idProduto,
             nome = produto.nome,
             tipo = produto.tipo.nomeTipo,
             quantidade = produto.quantidade,
@@ -42,7 +42,7 @@ class ProdutoService(
         val existente = produtoRepository.findById(id)
             .orElseThrow { RuntimeException("Produto não encontrado") }
 
-        val produtoAtualizado = produto.copy(id = existente.id)
+        val produtoAtualizado = produto.copy(idProduto = existente.idProduto)
         return toDTO(produtoRepository.save(produtoAtualizado))
     }
 

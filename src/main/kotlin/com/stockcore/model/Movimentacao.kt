@@ -8,7 +8,8 @@ import java.time.LocalDateTime
 data class Movimentacao(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @Column(name = "idMovimentacao")
+    val idMovimentacao: Long = 0,
 
     @ManyToOne
     @JoinColumn(name = "idProduto", nullable = false)
@@ -21,7 +22,7 @@ data class Movimentacao(
     @Column(nullable = false)
     val tipoMovimentacao: TipoMovimentacao,
 
-    @Column(nullable = false)
+    @Column(name = "dataHora", nullable = false)
     val dataHora: LocalDateTime = LocalDateTime.now(),
 
     val origem: String? = null

@@ -1,5 +1,6 @@
 package com.stockcore.controller
 
+import com.stockcore.dto.MovimentacaoCreateDTO
 import com.stockcore.dto.MovimentacaoDTO
 import com.stockcore.model.Movimentacao
 import com.stockcore.service.MovimentacaoService
@@ -26,8 +27,8 @@ class MovimentacaoController(
     }
 
     @PostMapping
-    fun criarMovimentacao(@RequestBody movimentacao: Movimentacao): ResponseEntity<MovimentacaoDTO> {
-        val novaMovimentacao = movimentacaoService.criarMovimentacao(movimentacao)
+    fun criarMovimentacao(@RequestBody dto: MovimentacaoCreateDTO): ResponseEntity<MovimentacaoDTO> {
+        val novaMovimentacao = movimentacaoService.criarMovimentacao(dto)
         return ResponseEntity.status(HttpStatus.CREATED).body(novaMovimentacao)
     }
 

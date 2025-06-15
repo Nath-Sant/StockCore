@@ -1,7 +1,9 @@
 package com.stockcore.service
 
+import com.stockcore.dto.MovimentacaoCreateDTO
 import com.stockcore.dto.MovimentacaoDTO
 import com.stockcore.model.Movimentacao
+import com.stockcore.model.TipoMovimentacao
 import com.stockcore.repository.MovimentacaoRepository
 import com.stockcore.repository.ProdutoRepository
 import org.springframework.stereotype.Service
@@ -14,7 +16,7 @@ class MovimentacaoService(
 
     private fun toDTO(movimentacao: Movimentacao): MovimentacaoDTO {
         return MovimentacaoDTO(
-            id = movimentacao.id,
+            id = movimentacao.idMovimentacao,
             produtoNome = movimentacao.produto.nome,
             quantidade = movimentacao.quantidade,
             tipoMovimentacao = movimentacao.tipoMovimentacao.name,
@@ -28,7 +30,7 @@ class MovimentacaoService(
     }
 
     fun listarPorProduto(produtoId: Long): List<MovimentacaoDTO> {
-        return movimentacaoRepository.findByProdutoId(produtoId).map { toDTO(it) }
+        return movimentacaoRepository.findByProduto_IdProduto(produtoId).map { toDTO(it) }
     }
 
     fun buscarPorId(id: Long): MovimentacaoDTO {
@@ -37,15 +39,28 @@ class MovimentacaoService(
         return toDTO(movimentacao)
     }
 
-    fun criarMovimentacao(movimentacao: Movimentacao): MovimentacaoDTO {
-        val produto = produtoRepository.findById(movimentacao.produto.id)
-            .orElseThrow { RuntimeException("Produto com id ${movimentacao.produto.id} não encontrado") }
+    fun criarMovimentacao(dto: MovimentacaoCreateDTO): MovimentacaoDTO {
+        val produto = produtoRepository.findById(dto.produtoId)
+            .orElseThrow { RuntimeException("Produto com id ${dto.produtoId} não encontrado") }
 
-        val novaQuantidade = produto.quantidade + movimentacao.quantidade
+        val novaQuantidade = when (dto.tipoMovimentacao.toString()) {
+            "ENTRADA" -> produto.quantidade + dto.quantidade
+            "SAIDA" -> produto.quantidade - dto.quantidade
+            else -> throw RuntimeException("Tipo de movimentação inválido: ${dto.tipoMovimentacao}")
+        }
+
         if (novaQuantidade < 0) throw RuntimeException("Estoque insuficiente para saída")
 
         produto.quantidade = novaQuantidade
         produtoRepository.save(produto)
+
+        val movimentacao = Movimentacao(
+            produto = produto,
+            quantidade = dto.quantidade,
+            tipoMovimentacao = TipoMovimentacao.valueOf(dto.tipoMovimentacao.toString()),
+            dataHora = dto.dataHora,
+            origem = dto.origem
+        )
 
         return toDTO(movimentacaoRepository.save(movimentacao))
     }
@@ -54,7 +69,7 @@ class MovimentacaoService(
         val existente = movimentacaoRepository.findById(id)
             .orElseThrow { RuntimeException("Movimentação não encontrada") }
 
-        return toDTO(movimentacaoRepository.save(movimentacao.copy(id = existente.id)))
+        return toDTO(movimentacaoRepository.save(movimentacao.copy(idMovimentacao = existente.idMovimentacao)))
     }
 
     fun deletarMovimentacao(id: Long) {

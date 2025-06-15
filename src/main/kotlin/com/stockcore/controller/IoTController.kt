@@ -1,8 +1,8 @@
 package com.stockcore.controller
 
+import com.stockcore.dto.MovimentacaoCreateDTO
 import com.stockcore.dto.MovimentacaoDTO
 import com.stockcore.model.Movimentacao
-import com.stockcore.model.Produto
 import com.stockcore.model.TipoMovimentacao
 import com.stockcore.repository.ProdutoRepository
 import com.stockcore.service.MovimentacaoService
@@ -32,15 +32,15 @@ class IoTController(
 
         val quantidadeFinal = if (tipoMovimentacao == TipoMovimentacao.ENTRADA) req.quantidade else -req.quantidade
 
-        val novaMovimentacao = Movimentacao(
-            produto = produto,
-            quantidade = quantidadeFinal,
-            tipoMovimentacao = tipoMovimentacao,
+        val novaMovimentacaoDTO = MovimentacaoCreateDTO(
+            produtoId = produto.idProduto,
+            quantidade = req.quantidade,
+            tipoMovimentacao = tipoMovimentacao.name,
             dataHora = LocalDateTime.now(),
             origem = "IOT"
         )
 
-        val movimentacaoDTO = movimentacaoService.criarMovimentacao(novaMovimentacao)
+        val movimentacaoDTO = movimentacaoService.criarMovimentacao(novaMovimentacaoDTO)
         return ResponseEntity.ok(movimentacaoDTO)
     }
 }
