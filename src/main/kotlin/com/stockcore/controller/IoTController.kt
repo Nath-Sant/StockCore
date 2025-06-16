@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.LocalDateTime
 
-data class IoTMovimentacaoRequest(val produtoId: Long, val quantidade: Int, val tipo: String)
+data class IoTMovimentacaoRequest(val produtoId: Long, val quantidade: Int, val tipoMovimentacao: String)
 
 @RestController
 @RequestMapping("/iot")
@@ -25,7 +25,7 @@ class IoTController(
             ?: return ResponseEntity.badRequest().body(null)
 
         val tipoMovimentacao = try {
-            TipoMovimentacao.valueOf(req.tipo.uppercase())
+            TipoMovimentacao.valueOf(req.tipoMovimentacao.uppercase())
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body(null)
         }
