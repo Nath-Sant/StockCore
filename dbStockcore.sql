@@ -21,7 +21,7 @@ create table movimentacao(
     idProduto int,
     quantidade int,
     tipoMovimentacao varchar(20),
-    dataHora datetime,
+    dataHora datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
     origem varchar(20),
 	foreign key(idProduto) references Produto(idProduto)
 );
