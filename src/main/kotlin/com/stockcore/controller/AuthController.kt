@@ -1,37 +1,29 @@
 package com.stockcore.controller
 
-import com.stockcore.security.JwtUtil
-import com.stockcore.security.LoginRequest
 import com.stockcore.repository.UsuarioRepository
+import com.stockcore.security.JwtUtils
+import com.stockcore.security.LoginRequest
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val authenticationManager: AuthenticationManager,
     private val userRepository: UsuarioRepository,
-    private val jwtUtil: JwtUtil
+    private val jwtUtils: JwtUtils
 ) {
 
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<Any> {
-        return try {
-            val authentication = authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(request.username, request.password)
-            )
+        val user = userRepository.findAll().firstOrNull { it.nome.equals(request.username, ignoreCase = true) }
+            ?: return ResponseEntity.status(401).body("Usuário não encontrado")
 
-            val user = userRepository.findByNome(request.username)
-                ?: return ResponseEntity.badRequest().body("Usuário não encontrado")
-
-            val token = jwtUtil.generateToken(user)
-
-            ResponseEntity.ok(mapOf("token" to token))
-
-        } catch (ex: Exception) {
-            ResponseEntity.status(401).body("Credenciais inválidas")
+        // Aqui se você quiser, pode fazer a validação de senha criptografada no futuro
+        if (user.senha != request.password) {
+            return ResponseEntity.status(401).body("Senha incorreta")
         }
+
+        val token = jwtUtils.generateToken(user)
+        return ResponseEntity.ok(mapOf("token" to token))
     }
 }

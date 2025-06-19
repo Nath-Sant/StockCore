@@ -12,7 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JWTAuthenticationFilter(
-    private val jwtUtil: JwtUtil,
+    private val jwtUtils: JwtUtils,
     private val userRepository: UsuarioRepository
 ) : OncePerRequestFilter() {
 
@@ -25,12 +25,12 @@ class JWTAuthenticationFilter(
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val token = authHeader.substring(7)
-            val username = jwtUtil.extractUsername(token)
+            val username = jwtUtils.extractUsername(token)
 
             if (username != null && SecurityContextHolder.getContext().authentication == null) {
                 val user = userRepository.findByNome(username)
 
-                if (user != null && jwtUtil.validateToken(token, user)) {
+                if (user != null && jwtUtils.validateToken(token, user)) {
                     val authorities = listOf(RoleAuthority(user.role))
 
                     val auth = UsernamePasswordAuthenticationToken(

@@ -4,13 +4,15 @@ import com.stockcore.model.Usuario
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.security.Keys // Importe esta classe
 import org.springframework.stereotype.Component
 import java.util.*
+import javax.crypto.SecretKey // Importe esta classe
 
 @Component
-class JwtUtil {
+class JwtUtils {
 
-    private val SECRET_KEY = "secreta123456"
+    private val SECRET_KEY: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
 
     fun generateToken(user: Usuario): String {
         val claims = mapOf(
@@ -21,8 +23,8 @@ class JwtUtil {
             .setClaims(claims)
             .setSubject(user.nome)
             .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-            .signWith(SignatureAlgorithm.HS256, SECRET_KEY.toByteArray())
+            .setExpiration(Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas de validade
+            .signWith(SECRET_KEY, SignatureAlgorithm.HS256) // Use a chave gerada
             .compact()
     }
 
@@ -40,8 +42,9 @@ class JwtUtil {
     }
 
     private fun getClaims(token: String): Claims {
-        return Jwts.parser()
-            .setSigningKey(SECRET_KEY.toByteArray())
+        return Jwts.parserBuilder() // Use parserBuilder() para a API mais recente
+            .setSigningKey(SECRET_KEY) // Use a chave gerada
+            .build()
             .parseClaimsJws(token)
             .body
     }
