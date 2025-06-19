@@ -1,13 +1,17 @@
 package com.stockcore.service
 
+import com.stockcore.dto.ProdutoCreateDTO
 import com.stockcore.dto.ProdutoDTO
+import com.stockcore.dto.ProdutoUpdateDTO
 import com.stockcore.model.Produto
 import com.stockcore.repository.ProdutoRepository
+import com.stockcore.repository.TipoProdutoRepository
 import org.springframework.stereotype.Service
 
 @Service
 class ProdutoService(
-    private val produtoRepository: ProdutoRepository
+    private val produtoRepository: ProdutoRepository,
+    private val tipoProdutoRepository: TipoProdutoRepository
 ) {
 
     private fun toDTO(produto: Produto): ProdutoDTO {
@@ -34,17 +38,41 @@ class ProdutoService(
         return produtoRepository.findByTipoNomeTipo(tipoNome).map { toDTO(it) }
     }
 
-    fun criarProduto(produto: Produto): ProdutoDTO {
+    fun buscarPorNome(nome: String): List<ProdutoDTO> {
+        return produtoRepository.findByNomeContainingIgnoreCase(nome).map { toDTO(it) }
+    }
+
+    fun criarProduto(dto: ProdutoCreateDTO): ProdutoDTO {
+        val tipo = tipoProdutoRepository.findById(dto.tipoId)
+            .orElseThrow { RuntimeException("TipoProduto com id ${dto.tipoId} não encontrado") }
+
+        val produto = Produto(
+            nome = dto.nome,
+            tipo = tipo,
+            quantidade = dto.quantidade,
+            descricao = dto.descricao
+        )
+
         return toDTO(produtoRepository.save(produto))
     }
 
-    fun atualizarProduto(id: Long, produto: Produto): ProdutoDTO {
-        val existente = produtoRepository.findById(id)
+    fun atualizarProduto(id: Long, dto: ProdutoUpdateDTO): ProdutoDTO {
+        val produtoExistente = produtoRepository.findById(id)
             .orElseThrow { RuntimeException("Produto não encontrado") }
 
-        val produtoAtualizado = produto.copy(idProduto = existente.idProduto)
+        val tipo = tipoProdutoRepository.findById(dto.tipoId)
+            .orElseThrow { RuntimeException("TipoProduto com id ${dto.tipoId} não encontrado") }
+
+        val produtoAtualizado = produtoExistente.copy(
+            nome = dto.nome,
+            tipo = tipo,
+            quantidade = dto.quantidade,
+            descricao = dto.descricao
+        )
+
         return toDTO(produtoRepository.save(produtoAtualizado))
     }
+
 
     fun deletarProduto(id: Long) {
         produtoRepository.deleteById(id)

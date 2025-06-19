@@ -26,6 +26,14 @@ create table movimentacao(
 	foreign key(idProduto) references Produto(idProduto)
 );
 
+create table usuario (
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL
+);
+
+
 INSERT INTO tipoProduto (nome) VALUES
 ('Eletrônico'),
 ('Roupas'),
@@ -39,3 +47,6 @@ INSERT INTO Produto (nome, idTipoProduto, quantidade, descricao) VALUES
 ('Arroz Tipo 1', 3, 100, 'Pacote de 5kg de arroz branco'),
 ('Caneta Azul', 4, 200, 'Caneta esferográfica azul'),
 ('Boneco de Ação', 5, 30, 'Boneco articulado para crianças maiores de 5 anos');
+
+INSERT INTO usuario(nome, senha, role) VALUES
+('Admin', 'adm123', 'ADM')

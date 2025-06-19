@@ -1,30 +1,37 @@
 package com.stockcore.controller
 
-import com.stockcore.dto.LoginRequest
-import com.stockcore.security.JWTUtil
+import com.stockcore.security.JwtUtil
+import com.stockcore.security.LoginRequest
 import com.stockcore.repository.UsuarioRepository
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.*
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    val usuarioRepository: UsuarioRepository,
-    val jwtUtil: JWTUtil
+    private val authenticationManager: AuthenticationManager,
+    private val userRepository: UsuarioRepository,
+    private val jwtUtil: JwtUtil
 ) {
-    val passwordEncoder = BCryptPasswordEncoder()
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<Any> {
-        val usuario = usuarioRepository.findByEmail(loginRequest.email)
-            ?: return ResponseEntity.badRequest().body("Usuário não encontrado")
+    fun login(@RequestBody request: LoginRequest): ResponseEntity<Any> {
+        return try {
+            val authentication = authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(request.username, request.password)
+            )
 
-        return if (passwordEncoder.matches(loginRequest.senha, usuario.senha)) {
-            val token = jwtUtil.generateToken(usuario.email)
+            val user = userRepository.findByNome(request.username)
+                ?: return ResponseEntity.badRequest().body("Usuário não encontrado")
+
+            val token = jwtUtil.generateToken(user)
+
             ResponseEntity.ok(mapOf("token" to token))
-        } else {
-            ResponseEntity.status(401).body("Senha incorreta")
+
+        } catch (ex: Exception) {
+            ResponseEntity.status(401).body("Credenciais inválidas")
         }
     }
 }

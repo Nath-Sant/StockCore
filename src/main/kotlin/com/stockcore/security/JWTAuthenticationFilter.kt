@@ -1,43 +1,49 @@
 package com.stockcore.security
 
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.Jwts
+import com.stockcore.repository.UsuarioRepository
 import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletRequest
-import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
-import org.springframework.web.filter.GenericFilterBean
+import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
-class JWTAuthenticationFilter(private val jwtUtil: JWTUtil) : GenericFilterBean() {
+class JWTAuthenticationFilter(
+    private val jwtUtil: JwtUtil,
+    private val userRepository: UsuarioRepository
+) : OncePerRequestFilter() {
 
-    override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
-        val httpRequest = request as HttpServletRequest
-        val authHeader = httpRequest.getHeader("Authorization")
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain
+    ) {
+        val authHeader = request.getHeader("Authorization")
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val token = authHeader.substring(7)
-            try {
-                val claims: Claims = Jwts.parser()
-                    .setSigningKey(jwtUtil.secret)
-                    .parseClaimsJws(token)
-                    .body
+            val username = jwtUtil.extractUsername(token)
 
-                val username = claims.subject
-                if (username != null) {
-                    val auth = UsernamePasswordAuthenticationToken(username, null, emptyList())
-                    auth.details = WebAuthenticationDetailsSource().buildDetails(httpRequest)
+            if (username != null && SecurityContextHolder.getContext().authentication == null) {
+                val user = userRepository.findByNome(username)
+
+                if (user != null && jwtUtil.validateToken(token, user)) {
+                    val authorities = listOf(RoleAuthority(user.role))
+
+                    val auth = UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        authorities
+                    )
+                    auth.details = WebAuthenticationDetailsSource().buildDetails(request)
                     SecurityContextHolder.getContext().authentication = auth
                 }
-
-            } catch (e: Exception) {
-                println("Token inválido: ${e.message}")
             }
         }
-        chain.doFilter(request, response)
+
+        filterChain.doFilter(request, response)
     }
 }

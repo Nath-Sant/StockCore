@@ -1,6 +1,6 @@
-package com.stockcore.dto
+package com.stockcore.security
 
 data class LoginRequest(
-    val email: String,
-    val senha: String
+    val username: String,
+    val password: String
 )

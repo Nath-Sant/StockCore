@@ -1,7 +1,8 @@
 package com.stockcore.controller
 
+import com.stockcore.dto.ProdutoCreateDTO
 import com.stockcore.dto.ProdutoDTO
-import com.stockcore.model.Produto
+import com.stockcore.dto.ProdutoUpdateDTO
 import com.stockcore.service.ProdutoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,17 +32,24 @@ class ProdutoController(
         return ResponseEntity.ok(produtos)
     }
 
+    @GetMapping("/{nome}")
+    fun buscarPorNome(@PathVariable nome: String): ResponseEntity<List<ProdutoDTO>> {
+        val produtos = produtoService.buscarPorNome(nome)
+        return ResponseEntity.ok(produtos)
+    }
+
     @PostMapping
-    fun criarProduto(@RequestBody produto: Produto): ResponseEntity<ProdutoDTO> {
-        val novoProduto = produtoService.criarProduto(produto)
+    fun criarProduto(@RequestBody dto: ProdutoCreateDTO): ResponseEntity<ProdutoDTO> {
+        val novoProduto = produtoService.criarProduto(dto)
         return ResponseEntity.status(HttpStatus.CREATED).body(novoProduto)
     }
 
     @PutMapping("/{id}")
-    fun atualizarProduto(@PathVariable id: Long, @RequestBody produto: Produto): ResponseEntity<ProdutoDTO> {
-        val produtoAtualizado = produtoService.atualizarProduto(id, produto)
+    fun atualizarProduto(@PathVariable id: Long, @RequestBody dto: ProdutoUpdateDTO): ResponseEntity<ProdutoDTO> {
+        val produtoAtualizado = produtoService.atualizarProduto(id, dto)
         return ResponseEntity.ok(produtoAtualizado)
     }
+
 
     @DeleteMapping("/{id}")
     fun deletarProduto(@PathVariable id: Long): ResponseEntity<Void> {

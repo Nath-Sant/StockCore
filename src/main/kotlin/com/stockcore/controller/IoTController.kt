@@ -2,7 +2,6 @@ package com.stockcore.controller
 
 import com.stockcore.dto.MovimentacaoCreateDTO
 import com.stockcore.dto.MovimentacaoDTO
-import com.stockcore.model.Movimentacao
 import com.stockcore.model.TipoMovimentacao
 import com.stockcore.repository.ProdutoRepository
 import com.stockcore.service.MovimentacaoService

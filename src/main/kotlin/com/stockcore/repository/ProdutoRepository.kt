@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ProdutoRepository : JpaRepository<Produto, Long> {
     fun findByTipoNomeTipo(nomeTipo: String): List<Produto>
+    fun findByNomeContainingIgnoreCase(nome: String): List<Produto>
 }

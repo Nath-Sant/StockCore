@@ -1,7 +1,8 @@
 package com.stockcore.controller
 
+import com.stockcore.dto.TipoProdutoCreateDTO
 import com.stockcore.dto.TipoProdutoDTO
-import com.stockcore.model.TipoProduto
+import com.stockcore.dto.TipoProdutoUpdateDTO
 import com.stockcore.service.TipoProdutoService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -26,16 +27,17 @@ class TipoProdutoController(
     }
 
     @PostMapping
-    fun criarTipoProduto(@RequestBody tipoProduto: TipoProduto): ResponseEntity<TipoProdutoDTO> {
-        val novoTipoProduto = tipoProdutoService.criarTipo(tipoProduto)
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoTipoProduto)
+    fun criarTipo(@RequestBody dto: TipoProdutoCreateDTO): ResponseEntity<TipoProdutoDTO> {
+        val novoTipo = tipoProdutoService.criarTipo(dto)
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoTipo)
     }
 
     @PutMapping("/{id}")
-    fun atualizarTipoProduto(@PathVariable id: Long, @RequestBody tipoProduto: TipoProduto): ResponseEntity<TipoProdutoDTO> {
-        val tipoProdutoAtualizado = tipoProdutoService.atualizarTipo(id, tipoProduto)
-        return ResponseEntity.ok(tipoProdutoAtualizado)
+    fun atualizarTipo(@PathVariable id: Long, @RequestBody dto: TipoProdutoUpdateDTO): ResponseEntity<TipoProdutoDTO> {
+        val tipoAtualizado = tipoProdutoService.atualizarTipo(id, dto)
+        return ResponseEntity.ok(tipoAtualizado)
     }
+
 
     @DeleteMapping("/{id}")
     fun deletarTipoProduto(@PathVariable id: Long): ResponseEntity<Void> {

@@ -1,6 +1,8 @@
 package com.stockcore.service
 
+import com.stockcore.dto.TipoProdutoCreateDTO
 import com.stockcore.dto.TipoProdutoDTO
+import com.stockcore.dto.TipoProdutoUpdateDTO
 import com.stockcore.model.TipoProduto
 import com.stockcore.repository.TipoProdutoRepository
 import org.springframework.stereotype.Service
@@ -27,17 +29,19 @@ class TipoProdutoService(
         return toDTO(tipo)
     }
 
-    fun criarTipo(tipoProduto: TipoProduto): TipoProdutoDTO {
-        return toDTO(tipoProdutoRepository.save(tipoProduto))
+    fun criarTipo(dto: TipoProdutoCreateDTO): TipoProdutoDTO {
+        val tipo = TipoProduto(nomeTipo = dto.nomeTipo)
+        return toDTO(tipoProdutoRepository.save(tipo))
     }
 
-    fun atualizarTipo(id: Long, tipoProduto: TipoProduto): TipoProdutoDTO {
+    fun atualizarTipo(id: Long, dto: TipoProdutoUpdateDTO): TipoProdutoDTO {
         val existente = tipoProdutoRepository.findById(id)
             .orElseThrow { RuntimeException("TipoProduto não encontrado") }
 
-        val tipoAtualizado = tipoProduto.copy(idTipoProduto = existente.idTipoProduto)
+        val tipoAtualizado = existente.copy(nomeTipo = dto.nomeTipo)
         return toDTO(tipoProdutoRepository.save(tipoAtualizado))
     }
+
 
     fun deletarTipo(id: Long) {
         tipoProdutoRepository.deleteById(id)

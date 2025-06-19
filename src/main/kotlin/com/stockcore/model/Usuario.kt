@@ -3,14 +3,20 @@ package com.stockcore.model
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "usuario")
 data class Usuario(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idUsuario")
+    val idUsuario: Long = 0,
 
+    @Column(nullable = false, unique = true)
     val nome: String,
-    val email: String,
 
-    var senha: String,  // Salva criptografada!
+    @Column(nullable = false)
+    val senha: String,
 
-    val role: String = "FUNCIONARIO"  // Exemplo de role
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val role: Role
 )
