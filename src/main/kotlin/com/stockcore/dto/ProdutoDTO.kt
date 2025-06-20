@@ -1,7 +1,7 @@
 package com.stockcore.dto
 
 data class ProdutoDTO(
-    val id: Long,
+    val id: Int,
     val nome: String,
     val tipo: String,
     val quantidade: Int,

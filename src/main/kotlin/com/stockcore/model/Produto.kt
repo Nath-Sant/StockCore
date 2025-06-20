@@ -8,7 +8,7 @@ data class Produto(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idProduto")
-    val idProduto: Long = 0,
+    val idProduto: Int = 0,
 
     @Column(nullable = false)
     val nome: String,

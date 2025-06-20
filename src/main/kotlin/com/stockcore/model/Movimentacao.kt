@@ -9,7 +9,7 @@ data class Movimentacao(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMovimentacao")
-    val idMovimentacao: Long = 0,
+    val idMovimentacao: Int = 0,
 
     @ManyToOne
     @JoinColumn(name = "idProduto", nullable = false)
