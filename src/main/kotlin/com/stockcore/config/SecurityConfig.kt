@@ -30,7 +30,7 @@ class SecurityConfig(private val jwtFilter: JWTAuthenticationFilter) {
 
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf().disable()
+        http.csrf{ it.disable() }
             .authorizeHttpRequests {
 
                 it.requestMatchers("/auth/login").permitAll()

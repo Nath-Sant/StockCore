@@ -4,15 +4,19 @@ import com.stockcore.model.Usuario
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import io.jsonwebtoken.security.Keys // Importe esta classe
+import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
-import javax.crypto.SecretKey // Importe esta classe
+import javax.crypto.SecretKey
+import java.util.Base64
 
 @Component
-class JwtUtils {
-
-    private val SECRET_KEY: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256)
+class JwtUtils (
+    @Value("\${stockcore.jwt.secret}") // Injeta a chave do application.properties
+    private val secretString: String // String da chave Base64
+){
+    private val SECRET_KEY: SecretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretString))
 
     fun generateToken(user: Usuario): String {
         val claims = mapOf(

@@ -40,7 +40,7 @@ class MovimentacaoService(
     }
 
     fun criarMovimentacao(dto: MovimentacaoCreateDTO): MovimentacaoDTO {
-        val produto = produtoRepository.findById(dto.produtoId)
+        val produto = produtoRepository.findById(dto.produtoId.toLong())
             .orElseThrow { RuntimeException("Produto com id ${dto.produtoId} não encontrado") }
 
         val novaQuantidade = when (dto.tipoMovimentacao.toString()) {

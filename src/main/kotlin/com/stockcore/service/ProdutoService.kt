@@ -43,7 +43,7 @@ class ProdutoService(
     }
 
     fun criarProduto(dto: ProdutoCreateDTO): ProdutoDTO {
-        val tipo = tipoProdutoRepository.findById(dto.tipoId)
+        val tipo = tipoProdutoRepository.findById(dto.tipoId.toLong())
             .orElseThrow { RuntimeException("TipoProduto com id ${dto.tipoId} não encontrado") }
 
         val produto = Produto(
@@ -60,7 +60,7 @@ class ProdutoService(
         val produtoExistente = produtoRepository.findById(id)
             .orElseThrow { RuntimeException("Produto não encontrado") }
 
-        val tipo = tipoProdutoRepository.findById(dto.tipoId)
+        val tipo = tipoProdutoRepository.findById(dto.tipoId.toLong())
             .orElseThrow { RuntimeException("TipoProduto com id ${dto.tipoId} não encontrado") }
 
         val produtoAtualizado = produtoExistente.copy(
