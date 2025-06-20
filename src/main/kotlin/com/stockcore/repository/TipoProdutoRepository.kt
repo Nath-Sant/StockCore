@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TipoProdutoRepository : JpaRepository<TipoProduto, Long> {
-    fun findByNomeTipo(nomeTipo: String): TipoProduto?
+    fun findByNome(nome: String): TipoProduto?
 }

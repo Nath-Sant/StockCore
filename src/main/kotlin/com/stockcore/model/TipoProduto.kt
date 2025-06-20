@@ -11,5 +11,5 @@ data class TipoProduto(
     val idTipoProduto: Int = 0,
 
     @Column(nullable = false, unique = true)
-    val nomeTipo: String
+    val nome: String
 )

@@ -18,7 +18,7 @@ class ProdutoService(
         return ProdutoDTO(
             id = produto.idProduto,
             nome = produto.nome,
-            tipo = produto.tipo.nomeTipo,
+            tipo = produto.tipo.nome,
             quantidade = produto.quantidade,
             descricao = produto.descricao,
         )
@@ -35,7 +35,7 @@ class ProdutoService(
     }
 
     fun buscarPorTipo(tipoNome: String): List<ProdutoDTO> {
-        return produtoRepository.findByTipoNomeTipo(tipoNome).map { toDTO(it) }
+        return produtoRepository.findByTipoNome(tipoNome).map { toDTO(it) }
     }
 
     fun buscarPorNome(nome: String): List<ProdutoDTO> {
