@@ -32,7 +32,7 @@ class ProdutoController(
         return ResponseEntity.ok(produtos)
     }
 
-    @GetMapping("/{nome}")
+    @GetMapping("/nome/{nome}")
     fun buscarPorNome(@PathVariable nome: String): ResponseEntity<List<ProdutoDTO>> {
         val produtos = produtoService.buscarPorNome(nome)
         return ResponseEntity.ok(produtos)
