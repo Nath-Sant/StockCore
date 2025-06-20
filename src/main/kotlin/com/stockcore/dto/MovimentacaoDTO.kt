@@ -7,6 +7,5 @@ data class MovimentacaoDTO(
     val produtoNome: String,
     val quantidade: Int,
     val tipoMovimentacao: String,
-    val dataHora: LocalDateTime,
     val origem: String?
 )

@@ -23,7 +23,17 @@ data class Movimentacao(
     val tipoMovimentacao: TipoMovimentacao,
 
     @Column(name = "dataHora", nullable = false)
-    val dataHora: LocalDateTime = LocalDateTime.now(),
+    var dataHora: LocalDateTime, // <--- Agora é 'var' (mutável)
 
     val origem: String? = null
-)
+){
+    @PrePersist
+    fun prePersist() {
+        // Define a dataHora apenas se ela ainda não tiver sido definida
+        // (ex: para casos onde você constrói a entidade e não atribui a data)
+        // O Hibernate garante que este método seja chamado antes da persistência.
+        if (this.dataHora == null) { // Usar 'this' é explícito, mas 'dataHora' também funciona
+            this.dataHora = LocalDateTime.now()
+        }
+    }
+}

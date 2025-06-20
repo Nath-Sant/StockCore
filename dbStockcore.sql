@@ -49,4 +49,7 @@ INSERT INTO Produto (nome, idTipoProduto, quantidade, descricao) VALUES
 ('Boneco de Ação', 5, 30, 'Boneco articulado para crianças maiores de 5 anos');
 
 INSERT INTO usuario(nome, senha, role) VALUES
-('Admin', 'adm123', 'ADM')
+('Admin', 'adm123', 'ADM');
+
+Select * from usuario;
+Select * from Produto

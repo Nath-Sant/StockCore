@@ -7,6 +7,9 @@ import com.stockcore.model.TipoMovimentacao
 import com.stockcore.repository.MovimentacaoRepository
 import com.stockcore.repository.ProdutoRepository
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import com.stockcore.exception.ResourceNotFoundException
+import com.stockcore.exception.BadRequestException
 
 @Service
 class MovimentacaoService(
@@ -20,7 +23,6 @@ class MovimentacaoService(
             produtoNome = movimentacao.produto.nome,
             quantidade = movimentacao.quantidade,
             tipoMovimentacao = movimentacao.tipoMovimentacao.name,
-            dataHora = movimentacao.dataHora,
             origem = movimentacao.origem
         )
     }
@@ -35,21 +37,21 @@ class MovimentacaoService(
 
     fun buscarPorId(id: Long): MovimentacaoDTO {
         val movimentacao = movimentacaoRepository.findById(id)
-            .orElseThrow { RuntimeException("Movimentação não encontrada") }
+            .orElseThrow { ResourceNotFoundException("Movimentação com ID $id não encontrada") }
         return toDTO(movimentacao)
     }
 
     fun criarMovimentacao(dto: MovimentacaoCreateDTO): MovimentacaoDTO {
         val produto = produtoRepository.findById(dto.produtoId.toLong())
-            .orElseThrow { RuntimeException("Produto com id ${dto.produtoId} não encontrado") }
+            .orElseThrow { ResourceNotFoundException("Produto com ID ${dto.produtoId} não encontrado") }
 
         val novaQuantidade = when (dto.tipoMovimentacao.toString()) {
             "ENTRADA" -> produto.quantidade + dto.quantidade
             "SAIDA" -> produto.quantidade - dto.quantidade
-            else -> throw RuntimeException("Tipo de movimentação inválido: ${dto.tipoMovimentacao}")
+            else -> throw BadRequestException("Tipo de movimentação inválido: ${dto.tipoMovimentacao}. Use 'ENTRADA' ou 'SAIDA'.") // Usa BadRequestException
         }
 
-        if (novaQuantidade < 0) throw RuntimeException("Estoque insuficiente para saída")
+        if (novaQuantidade < 0) throw BadRequestException("Estoque insuficiente para saída. Quantidade disponível: ${produto.quantidade}.")
 
         produto.quantidade = novaQuantidade
         produtoRepository.save(produto)
@@ -58,21 +60,17 @@ class MovimentacaoService(
             produto = produto,
             quantidade = dto.quantidade,
             tipoMovimentacao = TipoMovimentacao.valueOf(dto.tipoMovimentacao.toString()),
-            dataHora = dto.dataHora,
+            dataHora = LocalDateTime.now(),
             origem = dto.origem
         )
 
         return toDTO(movimentacaoRepository.save(movimentacao))
     }
 
-    fun atualizarMovimentacao(id: Long, movimentacao: Movimentacao): MovimentacaoDTO {
-        val existente = movimentacaoRepository.findById(id)
-            .orElseThrow { RuntimeException("Movimentação não encontrada") }
-
-        return toDTO(movimentacaoRepository.save(movimentacao.copy(idMovimentacao = existente.idMovimentacao)))
-    }
-
     fun deletarMovimentacao(id: Long) {
+        if (!movimentacaoRepository.existsById(id)) {
+            throw ResourceNotFoundException("Movimentação com ID $id não encontrada para exclusão.")
+        }
         movimentacaoRepository.deleteById(id)
     }
 }

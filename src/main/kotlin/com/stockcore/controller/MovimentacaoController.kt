@@ -25,17 +25,16 @@ class MovimentacaoController(
         val movimentacao = movimentacaoService.buscarPorId(id)
         return ResponseEntity.ok(movimentacao)
     }
+    @GetMapping("/produto/{produtoId}")
+    fun buscarMovimentacoesPorProduto(@PathVariable produtoId: Long): ResponseEntity<List<MovimentacaoDTO>> {
+        val movimentacoes = movimentacaoService.listarPorProduto(produtoId)
+        return ResponseEntity.ok(movimentacoes)
+    }
 
     @PostMapping
     fun criarMovimentacao(@RequestBody dto: MovimentacaoCreateDTO): ResponseEntity<MovimentacaoDTO> {
         val novaMovimentacao = movimentacaoService.criarMovimentacao(dto)
         return ResponseEntity.status(HttpStatus.CREATED).body(novaMovimentacao)
-    }
-
-    @PutMapping("/{id}")
-    fun atualizarMovimentacao(@PathVariable id: Long, @RequestBody movimentacao: Movimentacao): ResponseEntity<MovimentacaoDTO> {
-        val movimentacaoAtualizada = movimentacaoService.atualizarMovimentacao(id, movimentacao)
-        return ResponseEntity.ok(movimentacaoAtualizada)
     }
 
     @DeleteMapping("/{id}")

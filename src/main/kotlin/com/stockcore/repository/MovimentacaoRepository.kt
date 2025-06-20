@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface MovimentacaoRepository : JpaRepository<Movimentacao, Long> {
-    fun findByProduto_IdProduto(produtoId: Long): List<Movimentacao>
+    fun findByProduto_IdProduto(produtoId: Int): List<Movimentacao>
 }
